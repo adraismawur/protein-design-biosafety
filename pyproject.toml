@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "protein-biosafety"
+version = "1.0.0"
+dependencies = [
+  "flask",
+  "flask-wtf"
+]
+requires-python = ">=3.11"
+authors = [
+  {name = "Arjan Draisma", email = "arjan.draisma@wur.nl"},
+]
+maintainers = [
+  {name = "Arjan Draisma", email = "arjan.draisma@wur.nl"},
+]
+description = "Portal for protein design"
+readme = "README.MD"
+license = "tbd"
+license-files = ["LICENSE"]
+keywords = ["protein", "design", "biosafety"]
+classifiers = [
+  "Programming Language :: Python"
+]
