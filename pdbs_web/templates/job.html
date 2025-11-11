@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col s11">
+            <h2>Protein design biosafety</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 center-align big">
+            <p class="flow-text">
+                Your job state is: {{ job_state }}. There are {{ jobs_queued }} jobs in the queue.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

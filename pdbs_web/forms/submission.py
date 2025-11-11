@@ -1,5 +1,6 @@
-from flask_wtf import FlaskForm
+# from flask_wtf import FlaskForm
 from wtforms import (
+    Form,
     FileField,
     IntegerField,
     SelectField,
@@ -19,13 +20,13 @@ rfd_modes = [
 ]
 
 
-class MandatoryParameterForm(FlaskForm):
+class MandatoryParameterForm(Form):
     rfd_mode = SelectField(choices=rfd_modes, render_kw={"class": "browser-default"})
     rfd_num_designs = IntegerField(default=8)
     seqs_per_design = IntegerField(default=8)
 
 
-class FilteringParameterForm(FlaskForm):
+class FilteringParameterForm(Form):
     rfd_min_helices = IntegerField(default=1)
     rfd_max_helices = IntegerField(default=10)
     rfd_min_strands = IntegerField(default=1)
@@ -36,7 +37,7 @@ class FilteringParameterForm(FlaskForm):
     rfd_max_rog = IntegerField(default=10)
 
 
-class RunParameterForm(FlaskForm):
+class RunParameterForm(Form):
     file = FileField("Input PDB")
 
     mandatory_parameters = FormField(MandatoryParameterForm)
