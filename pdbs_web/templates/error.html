@@ -14,16 +14,7 @@
     <div class="row">
         <div class="col s12 center-align big">
             <p class="flow-text">
-                Your job is {{ job_state_text }}.
-            </p>
-            <p>
-                {% if job_state == 0 %}
-                There are {{ jobs_queued }} jobs in the queue.
-                Your job was submitted at {{job_queued_at}}
-                {% elif job_state == 1 %}
-                Your job started at {{job_started_at}}<br>
-                Time elapsed: {{job_time_elapsed}}
-                {% endif %}
+                {{ error }}
             </p>
         </div>
     </div>

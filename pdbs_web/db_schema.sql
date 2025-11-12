@@ -1,12 +1,13 @@
 CREATE TABLE IF NOT EXISTS jobs (
     id VARCHAR NOT NULL PRIMARY KEY,
     state INT NOT NULL DEFAULT 0,
-    started_at DATETIME NOT NULL DEFAULT current_timestamp,
+    queued_at DATETIME NOT NULL DEFAULT current_timestamp,
+    started_at DATETIME
     completed_at DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS job_params (
-    id VARCHAR NOT NULL PRIMARY KEY REFERENCES jobs.id,
+    id VARCHAR NOT NULL PRIMARY KEY REFERENCES jobs(id),
     rfd_mode VARCHAR NOT NULL,
     rfd_num_designs INT  NOT NULL,
     seqs_per_design INT  NOT NULL,

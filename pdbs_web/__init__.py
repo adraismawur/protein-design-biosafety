@@ -10,9 +10,11 @@ app = Flask(__name__)
 class Config:
     SECRET_KEY = os.environ.get("PDBS_SECRET", "CHANGEME")
     DB_PATH = os.environ.get("DB_PATH", "./pdbs.db")
+    OUTPUT_BASE_PATH = os.environ.get("OUTPUT_BASE_PATH", "./pdj_output")
 
 
 app.config.from_object(Config)
+
 
 def get_db():
     if "db" not in g:
@@ -20,14 +22,17 @@ def get_db():
 
         p = Path(__file__).parent
 
-        with open(p / "db_schema.sql", "r") as schema:
-            db.execute(schema.read())
-            db.commit()
-        
-        g.db = db
-    
-    return g.db
+        print(p)
 
+        with open(p / "db_schema.sql", "r") as schema:
+            schema = schema.read()
+            print(schema)
+            db.cursor().executescript(schema)
+            db.commit()
+
+        g.db = db
+
+    return g.db
 
 
 from pdbs_web import routes
