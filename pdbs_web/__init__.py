@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 
 class Config:
-    SECRET_KEY = os.environ.get("PDBS_SECRET", "CHANGEME")
     DB_PATH = os.environ.get("DB_PATH", "./pdbs.db")
     OUTPUT_BASE_PATH = os.environ.get("OUTPUT_BASE_PATH", "./pdj_output")
 
