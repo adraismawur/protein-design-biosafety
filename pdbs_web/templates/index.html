@@ -7,19 +7,33 @@
       <h2>Protein design biosafety</h2>
     </div>
   </div>
+  <div class="row">
+    <div class="col s11">
+      {% for design_mode in design_modes %}
+      <a href="{{ url_for('index', design_mode=design_mode) }}">
+        <button>{{design_mode}}</button>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
   <form method="post">
+    {% if has_file %}
     <div class="row">
       <div class="col s12 center-align">
         {{ form.file }}
       </div>
     </div>
+    {% endif %}
     <div class="row">
       <div class="col s4">
-        <h4>Mandatory</h4>
-        {{ form.mandatory_parameters }}
+        <h4>Mandatory parameters for {{current_design_mode}}</h4>
+        {% for field in mandatory_form %}
+        {{ field.label }}
+        {{ field }}
+        {% endfor %}
       </div>
       <div class="col s7">
-        <h4>Filtering</h4>
+        <h4>Design Filtering</h4>
         {{ form.filtering_parameters }}
       </div>
     </div>

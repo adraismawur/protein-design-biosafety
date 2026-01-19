@@ -1,14 +1,21 @@
 from datetime import datetime
+import json
 import os
 from sqlite3 import connect
 from time import sleep
 from subprocess import run
 from pathlib import Path
+from dotenv import load_dotenv
+
+from params import generate_cmd_params, validate_parameters
 
 STATE_QUEUED = 0
 STATE_RUNNING = 1
 STATE_FAILED = 2
 STATE_DONE = 3
+
+
+load_dotenv()
 
 
 class Config:
@@ -49,15 +56,16 @@ def main():
         r = db.execute("SELECT * FROM job_params WHERE id = ?", (job_id,))
 
         # skip id. TODO: replace with more generic solution
-        job_params = r.fetchone()[1:]
+        job_params = r.fetchone()[1]
 
         if job_params is None:
             r = db.execute(
-                "UPDATE jobs SET state = ?, started_at = ?, completed_at = ? WHERE id = ?",
+                "UPDATE jobs SET state = ?, started_at = ?, completed_at = ?, info = ? WHERE id = ?",
                 (
                     STATE_FAILED,
                     datetime.now(),
                     datetime.now(),
+                    "No parameters provided",
                     job_id,
                 ),
             )
@@ -65,10 +73,11 @@ def main():
             continue
 
         db.execute(
-            "UPDATE jobs SET state = ?, started_at = ? WHERE id = ?",
+            "UPDATE jobs SET state = ?, started_at = ?, info = ? WHERE id = ?",
             (
                 STATE_RUNNING,
                 datetime.now(),
+                "Job accepted",
                 job_id,
             ),
         )
@@ -77,23 +86,20 @@ def main():
         print(job)
         print(job_params)
 
-        proteindj_params = {}
-        proteindj_param_names = [
-            "--rfd_mode",
-            "--rfd_num_designs",
-            "--seqs_per_design",
-            "--rfd_min_helices",
-            "--rfd_max_helices",
-            "--rfd_min_strands",
-            "--rfd_max_strands",
-            "--rfd_min_ss",
-            "--rfd_max_ss",
-            "--rfd_min_rog",
-            "--rfd_max_rog",
-        ]
+        params = json.loads(job_params)
 
-        for i, pdj_param_name in enumerate(proteindj_param_names):
-            proteindj_params[pdj_param_name] = job_params[i]
+        validation = validate_parameters(params)
+
+        if not validation[0]:
+            db.execute(
+                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
+                (
+                    STATE_FAILED,
+                    datetime.now(),
+                    f"Validation failed: {validation[1]}",
+                    job_id,
+                ),
+            )
 
         nextflow_file_path = proteindj_path / "main.nf"
 
@@ -114,9 +120,7 @@ def main():
         ]
 
         # actual process args
-        for k, v in proteindj_params.items():
-            process_params.append(k)
-            process_params.append(str(v))
+        process_params.extend(generate_cmd_params(params))
 
         # output
         output_path = Path(Config.OUTPUT_BASE_PATH) / job_id
@@ -129,19 +133,21 @@ def main():
 
         if proc.returncode == 0:
             r = db.execute(
-                "UPDATE jobs SET state = ?, completed_at = ? WHERE id = ?",
+                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
                 (
                     STATE_DONE,
                     datetime.now(),
+                    "Job completed",
                     job_id,
                 ),
             )
         else:
             r = db.execute(
-                "UPDATE jobs SET state = ?, completed_at = ? WHERE id = ?",
+                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
                 (
                     STATE_FAILED,
                     datetime.now(),
+                    f"Failed to run ProteinDJ: {proc.stdout}",
                     job_id,
                 ),
             )

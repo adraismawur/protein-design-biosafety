@@ -17,6 +17,10 @@
                 Your job is {{ job_state_text }}.
             </p>
             <p>
+
+                {{ job_info }}
+            </p>
+            <p>
                 {% if job_state == 0 %}
                 There are {{ jobs_queued }} jobs in the queue.
                 Your job was submitted at {{job_queued_at}}

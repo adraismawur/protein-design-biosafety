@@ -1,15 +1,8 @@
 # from flask_wtf import FlaskForm
-from wtforms import (
-    Form,
-    FileField,
-    IntegerField,
-    SelectField,
-    FormField,
-    SubmitField,
-)
+from wtforms import FileField, Form, IntegerField, FormField, SubmitField, StringField
 
 
-rfd_modes = [
+design_modes = [
     "monomer_denovo",
     "monomer_foldcond",
     "monomer_motifscaff",
@@ -20,10 +13,10 @@ rfd_modes = [
 ]
 
 
-class MandatoryParameterForm(Form):
-    rfd_mode = SelectField(choices=rfd_modes, render_kw={"class": "browser-default"})
-    rfd_num_designs = IntegerField(default=8)
-    seqs_per_design = IntegerField(default=8)
+class MandatoryMonomerDenovoForm(Form):
+    design_length = StringField(label="Design length", default="60-100")
+    rfd_num_designs = IntegerField(label="Number of designs", default=8)
+    seqs_per_design = IntegerField(label="Sequences per design", default=8)
 
 
 class FilteringParameterForm(Form):
@@ -40,7 +33,6 @@ class FilteringParameterForm(Form):
 class RunParameterForm(Form):
     file = FileField("Input PDB")
 
-    mandatory_parameters = FormField(MandatoryParameterForm)
     filtering_parameters = FormField(FilteringParameterForm)
 
     submit = SubmitField("Submit", render_kw={"class": "btn"})

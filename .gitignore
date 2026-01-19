@@ -20,3 +20,6 @@ work
 *.db
 
 proteindj
+proteindj_output
+
+.env
