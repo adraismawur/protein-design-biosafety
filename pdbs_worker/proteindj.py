@@ -1,9 +1,10 @@
 from datetime import datetime
+import os
 from subprocess import PIPE, run
 from pathlib import Path
 
 from config import Config
-from params import generate_cmd_params
+from params import generate_cmd_params, REQUIRE_FILES
 from constants import STATE_FAILED, STATE_DONE
 
 
@@ -38,6 +39,11 @@ def run_proteindj(
     # actual process args
     process_params.extend(generate_cmd_params(params))
 
+    # add file if needed
+    if params["design_mode"] in REQUIRE_FILES:
+        file_path = os.path.join(Config.UPLOAD_FOLDER, job_id + ".pdb")
+        process_params.extend(["--input_pdb", file_path])
+
     # output
     output_path = Path(Config.OUTPUT_BASE_PATH) / job_id
     process_params.append("--out_dir")
@@ -61,6 +67,8 @@ def run_proteindj(
         # try and figure out a reason. Nextflow is kind of weird so we have to dig through stdout/stderr
         # for specific errors.
         reason = "Unknown error"
+
+        print(proc.stdout)
 
         for line in proc.stdout.split("\n"):
             if "Process requirement exceeds available memory" in line:

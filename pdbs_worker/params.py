@@ -60,6 +60,8 @@ MANDATORY_PARAMETERS = {
     ],
 }
 
+REQUIRE_FILES = {"binder_denovo"}
+
 
 def validate_integer_param_limits(params: dict[str, int]) -> tuple[bool, str]:
     for key, limits in PARAMETER_LIMITS.items():

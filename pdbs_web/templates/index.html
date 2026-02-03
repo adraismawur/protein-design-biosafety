@@ -17,16 +17,14 @@
     </div>
   </div>
   <form method="post" enctype="multipart/form-data">
-    {% if has_file %}
-    <div class="row">
-      <div class="col s12 center-align">
-        {{ form.file }}
-      </div>
-    </div>
-    {% endif %}
     <div class="row">
       <div class="col s4">
         <h4>Mandatory parameters for {{current_design_mode}}</h4>
+        {% if has_file %}
+        {{ form.file.label }}<br>
+        {{ form.file }}<br>
+        <br>
+        {% endif %}
         {% for field in mandatory_form %}
         {{ macros.render_field(field) }}
         {% endfor %}

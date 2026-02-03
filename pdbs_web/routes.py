@@ -17,6 +17,8 @@ design_modes = {
     "binder_denovo": MandatoryBinderDenovoForm,
 }
 
+require_files = {"binder_denovo"}
+
 
 @app.route("/", methods=["GET"])
 def index_redirect():
@@ -30,6 +32,8 @@ def index(design_mode: str):
 
     form = RunParameterForm(request.form)
 
+    has_file = design_mode in require_files
+
     mandatory_form = design_modes[design_mode](request.form)
 
     if request.method == "POST":
@@ -40,10 +44,10 @@ def index(design_mode: str):
         data.update(mandatory_form.data)
         data.update(form.filtering_parameters.data)
 
-        if mandatory_form.pdb_input:
+        if has_file:
             file_name = str(guid) + ".pdb"
             file_path = os.path.join(app.config.get("UPLOAD_FOLDER"), file_name)
-            request.files[mandatory_form.pdb_input.user_file.name].save(file_path)
+            request.files[form.file.name].save(file_path)
 
         db = get_db()
         db.execute("INSERT INTO jobs (id) VALUES (?)", (str(guid),))
@@ -61,7 +65,7 @@ def index(design_mode: str):
         form=form,
         mandatory_form=mandatory_form,
         current_design_mode=design_mode,
-        has_file=False,
+        has_file=has_file,
     )
 
 

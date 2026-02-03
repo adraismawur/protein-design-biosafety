@@ -25,7 +25,6 @@ class PdbInputForm(Form):
 
 
 class MandatoryBinderDenovoForm(Form):
-    pdb_input = FormField(PdbInputForm)
     design_length = StringField(label="Design length", default="60-100")
     rfd_num_designs = IntegerField(label="Number of designs", default=8)
     seqs_per_design = IntegerField(label="Sequences per design", default=8)
