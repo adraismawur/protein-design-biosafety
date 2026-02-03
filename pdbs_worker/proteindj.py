@@ -60,7 +60,7 @@ def run_proteindj(
     else:
         # try and figure out a reason. Nextflow is kind of weird so we have to dig through stdout/stderr
         # for specific errors.
-        reason = ""
+        reason = "Unknown error"
 
         for line in proc.stdout.split("\n"):
             if "Process requirement exceeds available memory" in line:

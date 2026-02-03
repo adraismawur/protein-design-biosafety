@@ -12,3 +12,4 @@ class Config:
     )
     PROTEINDJ_CPUS = os.environ.get("PROTEINDJ_CPUS", str(os.cpu_count()))
     OUTPUT_BASE_PATH = os.environ.get("OUTPUT_BASE_PATH", "./pdj_output")
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "./upload")

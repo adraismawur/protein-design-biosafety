@@ -4,12 +4,13 @@ from flask import Flask, g
 from pathlib import Path
 
 
-app = Flask(__name__)
-
-
 class Config:
     DB_PATH = os.environ.get("DB_PATH", "./pdbs.db")
     OUTPUT_BASE_PATH = os.environ.get("OUTPUT_BASE_PATH", "./pdj_output")
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "./upload")
+
+
+app = Flask(__name__)
 
 
 app.config.from_object(Config)

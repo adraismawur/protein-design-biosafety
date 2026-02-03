@@ -16,7 +16,7 @@
       {% endfor %}
     </div>
   </div>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% if has_file %}
     <div class="row">
       <div class="col s12 center-align">
@@ -28,8 +28,7 @@
       <div class="col s4">
         <h4>Mandatory parameters for {{current_design_mode}}</h4>
         {% for field in mandatory_form %}
-        {{ field.label }}
-        {{ field }}
+        {{ macros.render_field(field) }}
         {% endfor %}
       </div>
       <div class="col s7">

@@ -1,14 +1,20 @@
 import json
+import os
 from pathlib import Path
 from flask import render_template, request, redirect, url_for
 from pdbs_web import app, get_db
-from pdbs_web.forms.submission import MandatoryMonomerDenovoForm, RunParameterForm
+from pdbs_web.forms.submission import (
+    MandatoryBinderDenovoForm,
+    MandatoryMonomerDenovoForm,
+    RunParameterForm,
+)
 from uuid import uuid4
 from datetime import datetime
 
 
 design_modes = {
     "monomer_denovo": MandatoryMonomerDenovoForm,
+    "binder_denovo": MandatoryBinderDenovoForm,
 }
 
 
@@ -33,7 +39,11 @@ def index(design_mode: str):
         data["design_mode"] = design_mode
         data.update(mandatory_form.data)
         data.update(form.filtering_parameters.data)
-        data["input_pdb"] = form.file.data
+
+        if mandatory_form.pdb_input:
+            file_name = str(guid) + ".pdb"
+            file_path = os.path.join(app.config.get("UPLOAD_FOLDER"), file_name)
+            request.files[mandatory_form.pdb_input.user_file.name].save(file_path)
 
         db = get_db()
         db.execute("INSERT INTO jobs (id) VALUES (?)", (str(guid),))

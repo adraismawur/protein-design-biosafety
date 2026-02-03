@@ -19,6 +19,18 @@ class MandatoryMonomerDenovoForm(Form):
     seqs_per_design = IntegerField(label="Sequences per design", default=8)
 
 
+class PdbInputForm(Form):
+    user_file = FileField(label="Input PDB")
+    # accession = StringField(label="PDB accession")
+
+
+class MandatoryBinderDenovoForm(Form):
+    pdb_input = FormField(PdbInputForm)
+    design_length = StringField(label="Design length", default="60-100")
+    rfd_num_designs = IntegerField(label="Number of designs", default=8)
+    seqs_per_design = IntegerField(label="Sequences per design", default=8)
+
+
 class FilteringParameterForm(Form):
     rfd_min_helices = IntegerField(default=1)
     rfd_max_helices = IntegerField(default=10)

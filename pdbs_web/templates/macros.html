@@ -1,0 +1,22 @@
+{% macro render_field(field) %}
+
+{% if field.type == "FileField" %}
+{{ render_file_field(field) }}
+
+{% else %}
+
+{{ field.label }}
+{{ field }}
+
+{% endif %}
+
+{% endmacro %}
+
+{% macro render_file_field(field) %}
+
+{{ field.label }}<br>
+{{ field }}
+<br>
+<br>
+
+{% endmacro %}
