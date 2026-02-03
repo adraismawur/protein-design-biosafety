@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Flask",
+            "name": "Python Debugger: Web (Flask)",
             "type": "debugpy",
             "request": "launch",
             "module": "flask",
@@ -20,6 +20,13 @@
             ],
             "jinja": true,
             "autoStartBrowser": false
+        },
+        {
+            "name": "Python debugger: Worker",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/pdbs_worker",
+            "program": "${workspaceFolder}/pdbs_worker/worker.py"
         }
     ]
 }

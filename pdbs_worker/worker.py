@@ -1,42 +1,19 @@
 from datetime import datetime
 import json
-import os
 from sqlite3 import connect
 from time import sleep
-from subprocess import run
 from pathlib import Path
-from dotenv import load_dotenv
 
-from params import generate_cmd_params, validate_parameters
-
-STATE_QUEUED = 0
-STATE_RUNNING = 1
-STATE_FAILED = 2
-STATE_DONE = 3
-
-
-load_dotenv()
-
-
-class Config:
-    DB_PATH = os.environ.get("DB_PATH", "./pdbs.db")
-    PROTEINDJ_PATH = os.environ.get("PROTEINDJ_PATH", "./proteindj")
-    PROTEINDJ_IMAGE_PATH = os.environ.get(
-        "PROTEINDJ_IMAGE_PATH", "./proteindj/apptainer"
-    )
-    PROTEINDJ_CPUS = os.environ.get("PROTEINDJ_CPUS", str(os.cpu_count()))
-    OUTPUT_BASE_PATH = os.environ.get("OUTPUT_BASE_PATH", "./pdj_output")
+from params import validate_parameters
+from config import Config
+from constants import STATE_QUEUED, STATE_RUNNING, STATE_FAILED
+from proteindj import run_proteindj
 
 
 def main():
     db_path = Path(Config.DB_PATH).expanduser()
     print(f"Using db file: {db_path.absolute()}")
     db = connect(db_path)
-
-    proteindj_path = Path(Config.PROTEINDJ_PATH).expanduser()
-    print(f"proteindj source: {proteindj_path.absolute()}")
-    proteindj_image_path = Path(Config.PROTEINDJ_IMAGE_PATH).expanduser()
-    print(f"proteindj image path: {proteindj_image_path.absolute()}")
 
     while True:
         sleep(1)
@@ -101,57 +78,11 @@ def main():
                 ),
             )
 
-        nextflow_file_path = proteindj_path / "main.nf"
+        # handle file input
+        if False:
+            pass
 
-        # basics
-        process_params = [
-            "nextflow",
-            "run",
-            str(nextflow_file_path),
-            "-with-apptainer",
-            "rfdiffusion",
-            "--nv",
-            "--container_dir",
-            str(proteindj_image_path),
-            "--rfd_contigs",
-            "[50-50]",
-            "--cpus",
-            Config.PROTEINDJ_CPUS,
-        ]
-
-        # actual process args
-        process_params.extend(generate_cmd_params(params))
-
-        # output
-        output_path = Path(Config.OUTPUT_BASE_PATH) / job_id
-        process_params.append("--out_dir")
-        process_params.append(str(output_path))
-
-        print(f"CMD: {' '.join(process_params)}")
-
-        proc = run(process_params)
-
-        if proc.returncode == 0:
-            r = db.execute(
-                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
-                (
-                    STATE_DONE,
-                    datetime.now(),
-                    "Job completed",
-                    job_id,
-                ),
-            )
-        else:
-            r = db.execute(
-                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
-                (
-                    STATE_FAILED,
-                    datetime.now(),
-                    f"Failed to run ProteinDJ: {proc.stdout}",
-                    job_id,
-                ),
-            )
-        db.commit()
+        run_proteindj(db, params, job_id)
 
 
 if __name__ == "__main__":
