@@ -45,8 +45,12 @@ def index(design_mode: str):
         data.update(form.filtering_parameters.data)
 
         if has_file:
+            job_folder = Path(app.config.get("UPLOAD_FOLDER"), str(guid))
+
+            job_folder.mkdir(parents=True)
+
             file_name = str(guid) + ".pdb"
-            file_path = os.path.join(app.config.get("UPLOAD_FOLDER"), file_name)
+            file_path = job_folder / file_name
             request.files[form.file.name].save(file_path)
 
         db = get_db()

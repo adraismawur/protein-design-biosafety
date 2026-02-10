@@ -4,10 +4,25 @@ from sqlite3 import connect
 from time import sleep
 from pathlib import Path
 
-from params import validate_parameters
+from params import REQUIRE_FILES
 from config import Config
 from constants import STATE_QUEUED, STATE_RUNNING, STATE_FAILED
+from blast import BlastService
 from proteindj import run_proteindj
+
+
+def fail_job(db, job_id, reason):
+    db.execute(
+        "UPDATE jobs SET state = ?, started_at = ?, completed_at = ?, info = ? WHERE id = ?",
+        (
+            STATE_FAILED,
+            datetime.now(),
+            datetime.now(),
+            reason,
+            job_id,
+        ),
+    )
+    db.commit()
 
 
 def main():
@@ -60,27 +75,34 @@ def main():
         )
         db.commit()
 
-        print(job)
-        print(job_params)
-
         params = json.loads(job_params)
 
-        validation = validate_parameters(params)
+        # validation = validate_parameters(params)
 
-        if not validation[0]:
-            db.execute(
-                "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
-                (
-                    STATE_FAILED,
-                    datetime.now(),
-                    f"Validation failed: {validation[1]}",
+        # if not validation[0]:
+        #     db.execute(
+        #         "UPDATE jobs SET state = ?, completed_at = ?, info = ? WHERE id = ?",
+        #         (
+        #             STATE_FAILED,
+        #             datetime.now(),
+        #             f"Validation failed: {validation[1]}",
+        #             job_id,
+        #         ),
+        #     )
+        #     db.commit()
+        #     continue
+
+        # file pre-processing and filtering
+        if params["design_mode"] in REQUIRE_FILES:
+            filter_result = BlastService.filter_input(job_id)
+
+            if not filter_result[0]:
+                fail_job(
+                    db,
                     job_id,
-                ),
-            )
-
-        # handle file input
-        if False:
-            pass
+                    filter_result[1],
+                )
+                continue
 
         run_proteindj(db, params, job_id)
 

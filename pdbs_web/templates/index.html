@@ -4,41 +4,43 @@
 <div class="container">
   <div class="row">
     <div class="col s11">
-      <h2>Protein design biosafety</h2>
+      <h2>Protein Design Platform</h2>
     </div>
   </div>
-  <div class="row">
-    <div class="col s11">
-      {% for design_mode in design_modes %}
-      <a href="{{ url_for('index', design_mode=design_mode) }}">
-        <button>{{design_mode}}</button>
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-  <form method="post" enctype="multipart/form-data">
+  <div class="main">
     <div class="row">
-      <div class="col s4">
-        <h4>Mandatory parameters for {{current_design_mode}}</h4>
-        {% if has_file %}
-        {{ form.file.label }}<br>
-        {{ form.file }}<br>
-        <br>
-        {% endif %}
-        {% for field in mandatory_form %}
-        {{ macros.render_field(field) }}
+      <div class="col s11">
+        {% for design_mode in design_modes %}
+        <a href="{{ url_for('index', design_mode=design_mode) }}">
+          <button class="btn {{ 'disabled' if design_mode != current_design_mode }}">{{design_mode}}</button>
+        </a>
         {% endfor %}
       </div>
-      <div class="col s7">
-        <h4>Design Filtering</h4>
-        {{ form.filtering_parameters }}
-      </div>
     </div>
-    <div class="row">
-      <div class="col s12 center-align">
-        {{ form.submit }}
+    <form method="post" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col s4">
+          <h4>Mandatory parameters for {{current_design_mode}}</h4>
+          {% if has_file %}
+          {{ form.file.label }}<br>
+          {{ form.file }}<br>
+          <br>
+          {% endif %}
+          {% for field in mandatory_form %}
+          {{ macros.render_field(field) }}
+          {% endfor %}
+        </div>
+        <div class="col s7">
+          <h4>Design Filtering</h4>
+          {{ form.filtering_parameters }}
+        </div>
       </div>
-    </div>
-  </form>
+      <div class="row">
+        <div class="col s12 center-align">
+          {{ form.submit }}
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

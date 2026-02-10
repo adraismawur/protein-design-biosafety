@@ -8,3 +8,5 @@ dependencies:
   - flask-wtf
   - nextflow
   - wtforms
+  - biopython
+  - blast

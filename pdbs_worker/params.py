@@ -84,6 +84,7 @@ def validate_parameters(params: dict[str, object]) -> tuple[bool, str]:
         return (False, "Design mode not in parameters")
 
     if "mandatory_parameters" not in params:
+        print(params)
         return (False, "Mandatory parameters not provided")
 
     if "filtering_parameters" not in params:

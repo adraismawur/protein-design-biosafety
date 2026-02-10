@@ -41,7 +41,11 @@ def run_proteindj(
 
     # add file if needed
     if params["design_mode"] in REQUIRE_FILES:
-        file_path = os.path.join(Config.UPLOAD_FOLDER, job_id + ".pdb")
+        job_folder = Path(os.path.join(Config.UPLOAD_FOLDER, job_id))
+
+        job_folder.mkdir(parents=True, exist_ok=True)
+
+        file_path = os.path.join(job_folder, job_id + ".pdb")
         process_params.extend(["--input_pdb", file_path])
 
     # output
