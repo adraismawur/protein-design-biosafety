@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 from flask import render_template, request, redirect, url_for
 from pdbs_web import app, get_db

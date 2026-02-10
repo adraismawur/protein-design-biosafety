@@ -10,3 +10,5 @@ dependencies:
   - wtforms
   - biopython
   - blast
+  - pip:
+    - dotenv
